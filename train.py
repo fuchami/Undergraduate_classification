@@ -1,6 +1,6 @@
 # coding:utf-8
 
-import argparse
+import argparse,os,sys
 import h5py
 
 import numpy as np
@@ -24,11 +24,11 @@ def mobileNet_model(input_shape, classes):
 
     x_in = Input_shape
     x = mobilenet(x_in)
-    x = Dense(256, activation='relu')(x)
-    x = Dropout(0.25)(x)
+    x = Dense(128, activation='relu')(x)
+    x = Dropout(0.3)(x)
     x = Dense(64 , activation='relu')(x)
-    x = Dropout(0.25)(x)
-    x = Dense(classes, activaton='softmax')(x)
+    x = Dropout(0.3)(x)
+    x = Dense(classes, activation='softmax')(x)
 
     model = Model(x_in, x)
     model.summary()
@@ -41,11 +41,11 @@ def main(args, classes):
     para_str = 'model_epoch{}_imgsize{}_batchsize{}/'.format(
         args.epochs, args.imgsize, args.batchsize)
     para_path = './train_log/' + para_str
-    if not os.path.exitst(para_path +'/'):
+    if not os.path.exists(para_path +'/'):
         os.makedirs(para_path + '/')
 
     """ define callback """
-    base_lr = 1e-3
+    base_lr = 1e-4
     lr_decay_rate = 1/3
     lr_steps = 4
     reduce_lr = LearningRateScheduler(lambda ep: float(base_lr*lr_decay_rate**(ep * lr_steps// args.epochs)), verbose=1)
@@ -68,14 +68,14 @@ def main(args, classes):
     
     history = mobile_model.fit_generator(
         generator = train_generator,
-        steps_per_epoch = 500// args.batchsize,
+        steps_per_epoch = 532// args.batchsize,
         nb_epoch = args.epochs,
         callbacks = callbacks,
         validation_data = valid_generator,
-        validation_steps=1)
+        validation_steps=58)
     
     tools.plot_history(history, para_str, para_path)
-    mobile_model.save(para_path '/trained_model.h5')
+    mobile_model.save(para_path, '/trained_model.h5')
 
 
     return
@@ -84,11 +84,11 @@ if __name__ == "__main__":
     classes = ['engineering_faculty', 'law_department']
 
     parser = argparse.ArgumentParser(description='train mobileNet')
-    parser.add_argument('--trainpath', type=str, default='')
-    parser.add_argument('--validpath', type=str, default='')
+    parser.add_argument('--trainpath', type=str, default='/media/futami/HDD1/DATASET_KINGDOM/GRADUATION_ALBUM/datasets/train/')
+    parser.add_argument('--validpath', type=str, default='/media/futami/HDD1/DATASET_KINGDOM/GRADUATION_ALBUM/datasets/valid/')
     parser.add_argument('--epochs', '-e', type=int, default=100)
-    parser.add_argument('--imgsize', '-i', type=int, default=244)
-    parser.add_argument('--batchsize', '-b', type=int, default=32)
+    parser.add_argument('--imgsize', '-i', type=int, default=128)
+    parser.add_argument('--batchsize', '-b', type=int, default=16)
 
     args = parser.parse_args()
     main(args, classes)
