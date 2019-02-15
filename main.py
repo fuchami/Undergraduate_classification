@@ -97,7 +97,7 @@ def getImageLine(event):
     # 画像の取得
     result = requests.get(line_url, headers=header)
 
-    return 
+    return result
 
 # 顔画像が含まれていれば切り抜いて返す,なければダメって言う
 def check_face(event, result):
