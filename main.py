@@ -6,6 +6,7 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 import cv2
+import predict
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -67,9 +68,11 @@ def handle_message(event):
 def handle_image(event):
     print("handel_message:", event)
     # オウム返し: text=event.message.text
+    """
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text='送信された顔画像を解析します...'))
+    """
     
     # 画像データを取得
     image = getImageLine(event)
@@ -85,9 +88,17 @@ def getImageLine(event):
     
     # 画像の取得
     result = requests.get(line_url, headers=header)
-    print('画像取得できました。', result)
+    if result:
+        # モデルを使って判定を行う
+        print('モデルで判定を行う')
+        predict.pred(result)
+    else :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像'))
+        return
 
-    return result
+    return 
 
 # 顔画像が含まれていれば切り抜いて返す,なければダメって言う
 def check_face(event, result):
@@ -115,10 +126,6 @@ def check_face(event, result):
             return face_img
     else:
         print('顔画像が見つからなかった')
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像')
-        )
         return 
 
 if __name__ == "__main__":
