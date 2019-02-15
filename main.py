@@ -114,11 +114,12 @@ def check_face(event, result):
             print("顔画像見つけました")
             return face_img
     else:
+        print('顔画像が見つからなかった')
         line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像')
         )
-        return '顔画像が見つからなかった'
+        return 
 
 if __name__ == "__main__":
     # app.run()
