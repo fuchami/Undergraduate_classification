@@ -77,7 +77,16 @@ def handle_image(event):
     # 画像データを取得
     image = getImageLine(event)
     # 顔画像が含まれているかcheck
-    check_face(event, image)
+    face_img = check_face(event, image)
+    if face_img:
+        # モデルを使って判定を行う
+        print('モデルで判定を行う')
+        predict.pred(face_img)
+    else :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像'))
+        return
 
 # LINEから画像データを取得
 def getImageLine(event):
@@ -85,18 +94,8 @@ def getImageLine(event):
     message_content = line_bot_api.get_message_content(message_id)
 
     line_url = 'https://api.line.me/v2/bot/message/' + message_id + '/content/'
-    
     # 画像の取得
     result = requests.get(line_url, headers=header)
-    if result:
-        # モデルを使って判定を行う
-        print('モデルで判定を行う')
-        predict.pred(result)
-    else :
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像'))
-        return
 
     return 
 
