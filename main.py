@@ -60,7 +60,7 @@ def handle_message(event):
     # オウム返し: text=event.message.text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='あなたの顔画像を送信してください'))
+        TextSendMessage(text='あなたの顔画像を送信してください。工学部か法学部かどうかAIが判定します。\n※本botはジョークアプリです。'))
 
 # 画像が来たときの反応？
 @handler.add(MessageEvent, message=ImageMessage)
@@ -80,15 +80,12 @@ def handle_image(event):
 def getImageLine(event):
     message_id = event.message.id
     message_content = line_bot_api.get_message_content(message_id)
-    image = BytesIO(message_content.content)
-    print('image:', image)
 
     line_url = 'https://api.line.me/v2/bot/message/' + message_id + '/content/'
     
     # 画像の取得
     result = requests.get(line_url, headers=header)
-
-    print('顔みつけました', result)
+    print('画像取得できました。', result)
 
     return result
 
@@ -109,7 +106,7 @@ def check_face(event, result):
     print(src_img)
 
     # 顔画像を検出する
-    cascade = cv2.CascadeClassifier('/model/haarcascade_frontalface_alt.xml')
+    cascade = cv2.CascadeClassifier('/haarcascade_frontalface_alt.xml')
     gray_img = cv2.cvtColor(src_img, cv2.COLOR_RGB2GRAY)
     facerect = cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=1, minSize=(180,180))
     if len(facerect)>0:
