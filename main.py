@@ -72,8 +72,9 @@ def handle_image(event):
         TextSendMessage(text='画像を解析します...'))
     
     # 画像データを取得
-    getImageLine(event.message.id)
+    image = getImageLine(event.message.id)
     # 顔画像が含まれているかcheck
+    check_face(image)
 
 # LINEから画像データを取得
 def getImageLine(id):
@@ -90,8 +91,13 @@ def getImageLine(id):
     return result
 
 # 顔画像が含まれていれば切り抜いて返す,なければダメって言う
-def check_face():
-    return
+def check_face(image):
+    if image:
+        # 切り抜く
+        return 
+    else:
+        print("no face from image")
+        return
 
 if __name__ == "__main__":
     # app.run()
