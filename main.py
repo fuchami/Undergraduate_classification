@@ -78,15 +78,15 @@ def handle_image(event):
     image = getImageLine(event)
     # 顔画像が含まれているかcheck
     face_img = check_face(event, image)
-    if face_img:
+    if face_img is None :
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像\n/・1人だけの顔が映っている画像'))
+        return
+    else :
         # モデルを使って判定を行う
         print('モデルで判定を行う')
         predict.pred(face_img)
-    else :
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像'))
-        return
 
 # LINEから画像データを取得
 def getImageLine(event):
@@ -122,7 +122,7 @@ def check_face(event, result):
         for rect in facerect:
             face_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
-            return face_img
+        return face_img
     else:
         print('顔画像が見つからなかった')
         return 
