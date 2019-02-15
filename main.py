@@ -25,10 +25,11 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
+# LINE APIにアプリがあることを知らせるためのもの
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
-    signatue = request.headers['X-Line-Signature']
+    signature = request.headers['X-Line-Signature']
 
     # get request body as text
     body = request.get_data(as_text=True)
@@ -36,17 +37,31 @@ def callback():
 
     # handle webhook body
     try:
-        handler.handle(body, signatue)
+        handler.handle(body, signature)
     except:
         abort(400)
     
     return 'OK'
 
+# メッセージがきたときの反応
 @handler.add(MessageEvent, message=TextMessage)
-def handel_message(event):
+def handle_message(event):
+    print("handel_message:", event)
+    # オウム返し: text=event.message.text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=event.message.text))
+        TextSendMessage(text='あなたの顔画像を送信してください'))
+
+# 画像が来たときの反応？
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_image(event):
+    print("handel_message:", event)
+    # オウム返し: text=event.message.text
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text='画像ありがとう'))
+
+
 
 if __name__ == "__main__":
     # app.run()
