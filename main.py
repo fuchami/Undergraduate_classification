@@ -32,7 +32,7 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
 header = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer" + YOUR_CHANNEL_ACCESS_TOKEN
+    "Authorization": "Bearer " + YOUR_CHANNEL_ACCESS_TOKEN
 }
 
 # LINE APIにアプリがあることを知らせるためのもの
