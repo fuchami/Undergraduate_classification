@@ -69,16 +69,17 @@ def handle_image(event):
     # オウム返し: text=event.message.text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='画像を解析します...'))
+        TextSendMessage(text='送信された顔画像を解析します...'))
     
     # 画像データを取得
-    image = getImageLine(event.message.id)
+    image = getImageLine(event)
     # 顔画像が含まれているかcheck
-    check_face(image)
+    check_face(event, image)
 
 # LINEから画像データを取得
-def getImageLine(id):
-    message_content = line_bot_api.get_message_content(id)
+def getImageLine(event):
+    message_id = event.message.id
+    message_content = line_bot_api.get_message_content(message_id)
     image = BytesIO(message_content.content)
     print('image:', image)
 
@@ -86,18 +87,47 @@ def getImageLine(id):
     
     # 画像の取得
     result = requests.get(line_url, headers=header)
-    print('result:', result)
+
+    print('顔みつけました', result)
 
     return result
 
 # 顔画像が含まれていれば切り抜いて返す,なければダメって言う
-def check_face(image):
-    if image:
-        # 切り抜く
-        return 
+def check_face(event, result):
+    image = Image.open(BytesIO(result.content))
+    if image is None:
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text='画像が取得出来ませんでした。')
+        )
+        return '必要な情報が足りません'
+
+    # PIL -> openCVへ
+    print(image)
+    src_img = np.asarray(image)
+    print('convert PIL -> cv2')
+    print(src_img)
+
+    # 顔画像を検出する
+    cascade = cv2.CascadeClassifier('/model/haarcascade_frontalface_alt.xml')
+    gray_img = cv2.cvtColor(src_img, cv2.COLOR_RGB2GRAY)
+    facerect = cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=1, minSize=(180,180))
+    if len(facerect)>0:
+        for rect in facerect:
+            face_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
+            print("顔画像見つけました")
+            return face_img
     else:
-        print("no face from image")
-        return
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像。\n・正面を向いている顔画像')
+        )
+        return '顔画像が見つからなかった'
+
+    
+
+
+
 
 if __name__ == "__main__":
     # app.run()
