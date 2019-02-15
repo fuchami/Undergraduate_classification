@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import requests
 from flask import Flask, request, abort
 from PIL import Image
 from io import BytesIO
@@ -28,6 +29,11 @@ YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
+
+header = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer" + YOUR_CHANNEL_ACCESS_TOKEN
+}
 
 # LINE APIにアプリがあることを知らせるためのもの
 @app.route("/callback", methods=['POST'])
@@ -63,7 +69,7 @@ def handle_image(event):
     # オウム返し: text=event.message.text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='画像ありがとう'))
+        TextSendMessage(text='画像を解析します...'))
     
     # 画像データを取得
     getImageLine(event.message.id)
@@ -71,14 +77,19 @@ def handle_image(event):
 
 # LINEから画像データを取得
 def getImageLine(id):
+    message_content = line_bot_api.get_message_content(id)
+    image = BytesIO(message_content.content)
+    print('image:', image)
 
     line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
     
     # 画像の取得
-    result = request.get(line_url, headers=header)
+    result = requests.get(line_url, headers=header)
+    print('result:', result)
+
     return result
 
-# 顔画像が含まれていれば切り抜いて返す,なければ
+# 顔画像が含まれていれば切り抜いて返す,なければダメって言う
 def check_face():
     return
 
