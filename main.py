@@ -1,6 +1,10 @@
 # coding:utf-8
 
 from flask import Flask, request, abort
+from PIL import Image
+from io import BytesIO
+import numpy as np
+import cv2
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -62,11 +66,17 @@ def handle_image(event):
         TextSendMessage(text='画像ありがとう'))
     
     # 画像データを取得
+    getImageLine(event.message.id)
     # 顔画像が含まれているかcheck
 
 # LINEから画像データを取得
 def getImageLine(id):
-    return
+
+    line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
+    
+    # 画像の取得
+    result = request.get(line_url, headers=header)
+    return result
 
 # 顔画像が含まれていれば切り抜いて返す,なければ
 def check_face():

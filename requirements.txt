@@ -1,2 +1,7 @@
 Flask==0.12.2
 line-bot-sdk==1.5.0
+Pillow==5.1.0
+numpy==1.15.1
+opencv-python==3.4.1.15
+tensorflow==1.11.0     
+tensorflow-hub==0.1.1      
