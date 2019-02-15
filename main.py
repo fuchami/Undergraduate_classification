@@ -11,7 +11,7 @@ from linebot.exceptions import (
 )
 
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, ImageMessage, TextSendMessage,
 )
 
 import os
@@ -60,6 +60,10 @@ def handle_image(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text='画像ありがとう'))
+
+# LINEから画像データを取得
+def getImageLine(id):
+
 
 
 
