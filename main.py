@@ -106,7 +106,7 @@ def check_face(event, result):
     print(src_img)
 
     # 顔画像を検出する
-    cascade = cv2.CascadeClassifier('/haarcascade_frontalface_alt.xml')
+    cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
     gray_img = cv2.cvtColor(src_img, cv2.COLOR_RGB2GRAY)
     facerect = cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=1, minSize=(180,180))
     if len(facerect)>0:
@@ -120,11 +120,6 @@ def check_face(event, result):
             TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像。\n・正面を向いている顔画像')
         )
         return '顔画像が見つからなかった'
-
-    
-
-
-
 
 if __name__ == "__main__":
     # app.run()
