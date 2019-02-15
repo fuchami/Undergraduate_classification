@@ -83,7 +83,7 @@ def getImageLine(event):
     image = BytesIO(message_content.content)
     print('image:', image)
 
-    line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
+    line_url = 'https://api.line.me/v2/bot/message/' + message_id + '/content/'
     
     # 画像の取得
     result = requests.get(line_url, headers=header)
