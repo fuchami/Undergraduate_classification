@@ -60,7 +60,7 @@ def handle_message(event):
     # オウム返し: text=event.message.text
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text='あなたの顔画像を送信してください。工学部か法学部かどうかAIが判定します。\n※本botはジョークアプリです。'))
+        TextSendMessage(text='あなたの顔画像を送信してください。工学部か法学部かどうかAIが判定します。\n\n※本botはジョークアプリです。判定結果に一切責任も負いません。'))
 
 # 画像が来たときの反応？
 @handler.add(MessageEvent, message=ImageMessage)
@@ -100,15 +100,14 @@ def check_face(event, result):
         return '必要な情報が足りません'
 
     # PIL -> openCVへ
-    print(image)
     src_img = np.asarray(image)
     print('convert PIL -> cv2')
-    print(src_img)
 
     # 顔画像を検出する
     cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
     gray_img = cv2.cvtColor(src_img, cv2.COLOR_RGB2GRAY)
     facerect = cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=1, minSize=(180,180))
+    print(len(facerect))
     if len(facerect)>0:
         for rect in facerect:
             face_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
@@ -117,7 +116,7 @@ def check_face(event, result):
     else:
         line_bot_api.reply_message(
             event.reply_token,
-            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像。\n・正面を向いている顔画像')
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像')
         )
         return '顔画像が見つからなかった'
 
