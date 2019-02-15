@@ -60,12 +60,17 @@ def handle_image(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text='画像ありがとう'))
+    
+    # 画像データを取得
+    # 顔画像が含まれているかcheck
 
 # LINEから画像データを取得
 def getImageLine(id):
+    return
 
-
-
+# 顔画像が含まれていれば切り抜いて返す,なければ
+def check_face():
+    return
 
 if __name__ == "__main__":
     # app.run()
