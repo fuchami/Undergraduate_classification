@@ -104,6 +104,7 @@ def handle_image(event):
 def cvt_keras(img):
     # resize
     x = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
+    x = cv2.resize(x, dsize=(224,224))
     x = x.reshape((1,) + x.shape)
     x /= 255
     return x
@@ -112,10 +113,11 @@ def cvt_keras(img):
 def pred(img, pred_model):
     classes = ['engineering_faculty', 'law_department']
 
-    # kerasで読めるようにデータを加工
+    print('kerasで読めるようにデータを加工')
     img = cvt_keras(img)
 
     # 予測
+    print('予測')
     pred = pred_model.predict(img, batch_size=1)
     print(pred)
     score = np.max(pred)
