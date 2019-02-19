@@ -113,6 +113,8 @@ def pred(img, pred_model):
     score = np.max(pred)
     pred_label = np.argmax(pred)
     print(pred_label)
+    del pred
+    gc.collect()
 
     if pred_label == 0:
         return 0, score
@@ -143,9 +145,13 @@ def check_face(event, result):
         for rect in facerect:
             src_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
+            del cascade
+            gc.collect()
             return src_img
     else:
         print('顔画像が見つからなかった')
+        del cascade
+        gc.collect()
         return 
 
 if __name__ == "__main__":
