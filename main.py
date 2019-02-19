@@ -84,9 +84,9 @@ def handle_image(event):
     # 画像データを取得
     image = getImageLine(event)
     # 顔画像が含まれているかcheck
-    face_img = check_face(event, image)
+    image = check_face(event, image)
 
-    if face_img is None :
+    if image is None :
         line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像\n・1人だけの顔が映っている画像'))
@@ -94,7 +94,7 @@ def handle_image(event):
     else :
         # モデルを使って判定を行う
         print('モデルで判定を行う')
-        pred_label, score = pred(face_img, PRED_MODEL)
+        pred_label, score = pred(image, PRED_MODEL)
         result_text = 'あなたは' + str(round(score *100), 2) + '%の確率で' + classes[pred_label] + 'です。'
         print(result_text)
         line_bot_api.reply_message(
@@ -112,9 +112,6 @@ def cvt_keras(img):
 
 # message API用
 def pred(img, pred_model):
-    classes = ['engineering_faculty', 'law_department']
-
-    print('kerasで読めるようにデータを加工')
     img = cvt_keras(img)
 
     # 予測
@@ -157,12 +154,14 @@ def check_face(event, result):
         for rect in facerect:
             src_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
-            del cascade 
+            del cascade, gray_img
             gc.collect()
 
             return src_img
     else:
         print('顔画像が見つからなかった')
+        del cascade 
+        gc.collect()
         return 
 
 if __name__ == "__main__":
