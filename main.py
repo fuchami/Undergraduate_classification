@@ -1,6 +1,6 @@
 # coding:utf-8
 
-import requests
+import requests, os
 from flask import Flask, request, abort
 from PIL import Image
 from io import BytesIO
@@ -19,8 +19,6 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage,
 )
-
-import os
 
 app = Flask(__name__)
 
@@ -66,6 +64,8 @@ def handle_message(event):
 # 画像が来たときの反応？
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
+    classes = ["工学部", "法学部"]
+
     print("handel_message:", event)
     # オウム返し: text=event.message.text
     """
@@ -78,21 +78,26 @@ def handle_image(event):
     image = getImageLine(event)
     # 顔画像が含まれているかcheck
     face_img = check_face(event, image)
+
     if face_img is None :
         line_bot_api.reply_message(
             event.reply_token,
-            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像\n/・1人だけの顔が映っている画像'))
+            TextMessage(text='あなたの顔が検出されませんでした。以下の点に注意してもう一度顔画像を送信してみてください。\n\n・明るい場所で撮影された顔画像\n・正面を向いている顔画像\n・1人だけの顔が映っている画像'))
         return
     else :
         # モデルを使って判定を行う
         print('モデルで判定を行う')
-        predict.pred(face_img)
+        pred_label, score = predict.pred(face_img)
+        result_text = 'あなたは' + str(score *100) + 'の確率で' + classes[pred_label] + 'です。'
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextMessage(text=result_text))
+
+        
 
 # LINEから画像データを取得
 def getImageLine(event):
     message_id = event.message.id
-    message_content = line_bot_api.get_message_content(message_id)
-
     line_url = 'https://api.line.me/v2/bot/message/' + message_id + '/content/'
     # 画像の取得
     result = requests.get(line_url, headers=header)
@@ -111,18 +116,17 @@ def check_face(event, result):
 
     # PIL -> openCVへ
     src_img = np.asarray(image)
-    print('convert PIL -> cv2')
 
     # 顔画像を検出する
     cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
     gray_img = cv2.cvtColor(src_img, cv2.COLOR_RGB2GRAY)
     facerect = cascade.detectMultiScale(gray_img, scaleFactor=1.1, minNeighbors=1, minSize=(180,180))
-    print(len(facerect))
+    print('len(facerect): ', len(facerect))
     if len(facerect)>0:
         for rect in facerect:
             face_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
-        return face_img
+            return face_img
     else:
         print('顔画像が見つからなかった')
         return 
