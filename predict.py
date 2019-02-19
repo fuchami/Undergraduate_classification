@@ -24,8 +24,9 @@ def pred(img):
     classes = ['engineering_faculty', 'law_department']
 
     """ load model """
-    pred_model = load_model('./train_log/model_epoch100_imgsize224_batchsize16/trained_model.h5')
+    pred_model = load_model('./trained_model.h5')
     
+    print('load model')
     # kerasで読めるようにデータを加工
     img = cvt_keras(img)
 
@@ -53,7 +54,7 @@ def main(args):
     img_array = img_array[None, ...]
 
     """ load model """
-    pred_model = load_model('./train_log/model_epoch100_imgsize224_batchsize16/trained_model.h5')
+    pred_model = load_model('train_log/model_epoch100_imgsize224_batchsize16/trained_model.h5')
     pred_model.summary()
 
     # 予測

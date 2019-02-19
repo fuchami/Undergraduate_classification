@@ -89,6 +89,7 @@ def handle_image(event):
         print('モデルで判定を行う')
         pred_label, score = predict.pred(face_img)
         result_text = 'あなたは' + str(score *100) + 'の確率で' + classes[pred_label] + 'です。'
+        print(result_text)
         line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=result_text))
