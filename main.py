@@ -120,6 +120,9 @@ def pred(img, pred_model):
     score = np.max(pred)
     pred_label = np.argmax(pred)
     print(pred_label)
+    # メモリ解放
+    K.clear_session()
+    tf.reset_default_graph()
 
     if pred_label == 0:
         return 0, score
