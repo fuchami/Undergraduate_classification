@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 """ load model """
 PRED_MODEL = load_model('./trained_model.h5')
-print('load model')
+print('loaded model')
 
 # 環境変数
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
@@ -72,14 +72,7 @@ def handle_message(event):
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
     classes = ["工学部", "法学部"]
-
     print("handel_message:", event)
-    # オウム返し: text=event.message.text
-    """
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='送信された顔画像を解析します...'))
-    """
     
     # 画像データを取得
     image = getImageLine(event)
@@ -120,9 +113,6 @@ def pred(img, pred_model):
     score = np.max(pred)
     pred_label = np.argmax(pred)
     print(pred_label)
-    # メモリ解放
-    K.clear_session()
-    tf.reset_default_graph()
 
     if pred_label == 0:
         return 0, score
@@ -153,14 +143,9 @@ def check_face(event, result):
         for rect in facerect:
             src_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
-            del cascade, gray_img
-            gc.collect()
-
             return src_img
     else:
         print('顔画像が見つからなかった')
-        del cascade 
-        gc.collect()
         return 
 
 if __name__ == "__main__":
