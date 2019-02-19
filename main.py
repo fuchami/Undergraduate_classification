@@ -88,8 +88,9 @@ def handle_image(event):
         # モデルを使って判定を行う
         print('モデルで判定を行う')
         pred_label, score = pred(image, PRED_MODEL)
+        score = round(score*100, 2)
         print('score: ',score)
-        result_text = 'あなたは' + str(round(score *100), 2) + '%の確率で' + classes[pred_label] + 'です。'
+        result_text = 'あなたは' + str(score) + '%の確率で' + classes[pred_label] + 'です。'
         print(result_text)
         line_bot_api.reply_message(
             event.reply_token,
