@@ -124,7 +124,10 @@ def pred(img, pred_model):
     pred_label = np.argmax(pred)
     print(pred_label)
 
-    if pred_label == 0
+    del pred
+    gc.collect()
+
+    if pred_label == 0:
         return 0, score
     else:
         return 1 ,score
