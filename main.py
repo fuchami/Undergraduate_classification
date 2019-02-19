@@ -6,6 +6,7 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 import cv2
+from keras.models import load_model
 import predict
 
 from linebot import (
@@ -19,6 +20,10 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage,
 )
+
+""" load model """
+PRED_MODEL = load_model('./trained_model.h5')
+print('load model')
 
 app = Flask(__name__)
 
@@ -87,7 +92,7 @@ def handle_image(event):
     else :
         # モデルを使って判定を行う
         print('モデルで判定を行う')
-        pred_label, score = predict.pred(face_img)
+        pred_label, score = predict.pred(face_img, PRED_MODEL)
         result_text = 'あなたは' + str(score *100) + 'の確率で' + classes[pred_label] + 'です。'
         print(result_text)
         line_bot_api.reply_message(

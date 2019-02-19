@@ -20,13 +20,9 @@ def cvt_keras(img):
     return x
 
 # message API用
-def pred(img):
+def pred(img, pred_model):
     classes = ['engineering_faculty', 'law_department']
 
-    """ load model """
-    pred_model = load_model('./trained_model.h5')
-    
-    print('load model')
     # kerasで読めるようにデータを加工
     img = cvt_keras(img)
 
