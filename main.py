@@ -117,17 +117,15 @@ def pred(img, pred_model):
     # 予測
     print('予測')
     pred = pred_model.predict(img, batch_size=1)
+    del img
+    gc.collect()
     score = np.max(pred)
     pred_label = np.argmax(pred)
     print(pred_label)
 
     if pred_label == 0:
-        del pred,img
-        gc.collect()
         return 0, score
     else:
-        del pred,img
-        gc.collect()
         return 1 ,score
 
 # LINEから画像データを取得
