@@ -3,45 +3,12 @@
 import numpy as np
 import argparse
 import cv2
-import tensorflow as tf
 import keras
 from keras.preprocessing.image import array_to_img, img_to_array, load_img
 from keras.models import load_model
-from keras import backend as K
 
 import train
 
-# openCV -> keras 
-def cvt_keras(img):
-    # resize
-    x = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
-    x = x.reshape((1,) + x.shape)
-    x /= 255
-    return x
-
-# message API用
-def pred(img, pred_model):
-    classes = ['engineering_faculty', 'law_department']
-
-    # kerasで読めるようにデータを加工
-    img = cvt_keras(img)
-
-    # 予測
-    pred = pred_model.predict(img, batch_size=1)
-    print(pred)
-    score = np.max(pred)
-    print(score)
-    pred_label = np.argmax(pred)
-    print(pred_label)
-
-    # メモリ解放
-    K.clear_session()
-    tf.reset_default_graph()
-
-    if pred_label == 0:
-        return 0, score
-    else:
-        return 1 ,score
 
 # テスト用
 def main(args):

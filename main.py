@@ -6,8 +6,9 @@ from PIL import Image
 from io import BytesIO
 import numpy as np
 import cv2
+import tensorflow as tf
 from keras.models import load_model
-import predict
+from keras import backend as K
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -92,14 +93,44 @@ def handle_image(event):
     else :
         # モデルを使って判定を行う
         print('モデルで判定を行う')
-        pred_label, score = predict.pred(face_img, PRED_MODEL)
+        pred_label, score = pred(face_img, PRED_MODEL)
         result_text = 'あなたは' + str(score *100) + 'の確率で' + classes[pred_label] + 'です。'
         print(result_text)
         line_bot_api.reply_message(
             event.reply_token,
             TextMessage(text=result_text))
 
-        
+# openCV -> keras 
+def cvt_keras(img):
+    # resize
+    x = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
+    x = x.reshape((1,) + x.shape)
+    x /= 255
+    return x
+
+# message API用
+def pred(img, pred_model):
+    classes = ['engineering_faculty', 'law_department']
+
+    # kerasで読めるようにデータを加工
+    img = cvt_keras(img)
+
+    # 予測
+    pred = pred_model.predict(img, batch_size=1)
+    print(pred)
+    score = np.max(pred)
+    print(score)
+    pred_label = np.argmax(pred)
+    print(pred_label)
+
+    # メモリ解放
+    K.clear_session()
+    tf.reset_default_graph()
+
+    if pred_label == 0:
+        return 0, score
+    else:
+        return 1 ,score
 
 # LINEから画像データを取得
 def getImageLine(event):
