@@ -7,3 +7,4 @@ opencv-python==3.4.1.15
 tensorflow==1.11.0     
 tensorflow-hub==0.1.1      
 Keras==2.2.4 
+matplotlib==2.2.2 
