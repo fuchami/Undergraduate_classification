@@ -117,8 +117,10 @@ def pred(img, pred_model):
     gc.collect()
 
     if pred_label == 0:
+        print('return 0')
         return 0, score
     else:
+        print('return 1')
         return 1 ,score
 
 # LINEから画像データを取得
