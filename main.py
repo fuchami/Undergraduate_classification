@@ -88,6 +88,7 @@ def handle_image(event):
         # モデルを使って判定を行う
         print('モデルで判定を行う')
         pred_label, score = pred(image, PRED_MODEL)
+        print('score: ',score)
         result_text = 'あなたは' + str(round(score *100), 2) + '%の確率で' + classes[pred_label] + 'です。'
         print(result_text)
         line_bot_api.reply_message(
@@ -112,7 +113,6 @@ def pred(img, pred_model):
     pred = pred_model.predict(img, batch_size=1)
     score = np.max(pred)
     pred_label = np.argmax(pred)
-    print(pred_label)
     del pred
     gc.collect()
 
