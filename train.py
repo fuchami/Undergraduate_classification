@@ -33,9 +33,7 @@ def mobileNet_model(input_shape, classes):
     x_in = Input_shape
     x = mobilenet(x_in)
     x = Dense(1024, activation='relu')(x)
-    x = Dropout(0.25)
-    x = Dense(64, activation='relu')(x)
-    x = Dropout(0.25)
+    x = Dropout(0.3)(x)
     x = Dense(classes, activation='softmax')(x)
 
     model = Model(x_in, x)
@@ -53,7 +51,7 @@ def main(args, classes):
         os.makedirs(para_path + '/')
 
     """ define callback """
-    base_lr = 1e-4
+    base_lr = 1e-3
     lr_decay_rate = 1/3
     lr_steps = 4
     reduce_lr = LearningRateScheduler(lambda ep: float(base_lr*lr_decay_rate**(ep * lr_steps// args.epochs)), verbose=1)
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     parser.add_argument('--trainpath', type=str, default='/media/futami/HDD1/DATASET_KINGDOM/GRADUATION_ALBUM/datasets/train/')
     parser.add_argument('--validpath', type=str, default='/media/futami/HDD1/DATASET_KINGDOM/GRADUATION_ALBUM/datasets/valid/')
     parser.add_argument('--epochs', '-e', type=int, default=100)
-    parser.add_argument('--imgsize', '-i', type=int, default=128)
+    parser.add_argument('--imgsize', '-i', type=int, default=224)
     parser.add_argument('--batchsize', '-b', type=int, default=16)
 
     args = parser.parse_args()
