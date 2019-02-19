@@ -125,6 +125,7 @@ def pred(img, pred_model):
     print(pred_label)
 
     del pred
+    del img
     gc.collect()
 
     if pred_label == 0:
