@@ -9,6 +9,7 @@ import cv2
 import tensorflow as tf
 from keras.models import load_model
 from keras import backend as K
+import gc
 
 from linebot import (
     LineBotApi, WebhookHandler
@@ -103,11 +104,11 @@ def handle_image(event):
 # openCV -> keras 
 def cvt_keras(img):
     # resize
-    x = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
-    x = cv2.resize(x, dsize=(224,224))
-    x = x.reshape((1,) + x.shape)
-    x /= 255
-    return x
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32)
+    img = cv2.resize(img, dsize=(224,224))
+    img = img.reshape((1,) + img.shape)
+    img /= 255
+    return img
 
 # message API用
 def pred(img, pred_model):
@@ -119,17 +120,15 @@ def pred(img, pred_model):
     # 予測
     print('予測')
     pred = pred_model.predict(img, batch_size=1)
-    print(pred)
     score = np.max(pred)
-    print(score)
     pred_label = np.argmax(pred)
     print(pred_label)
 
     # メモリ解放
-    K.clear_session()
-    tf.reset_default_graph()
+    del pred
+    gc.collect()
 
-    if pred_label == 0:
+    if pred_label == 0
         return 0, score
     else:
         return 1 ,score
@@ -145,16 +144,9 @@ def getImageLine(event):
 
 # 顔画像が含まれていれば切り抜いて返す,なければダメって言う
 def check_face(event, result):
-    image = Image.open(BytesIO(result.content))
-    if image is None:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextMessage(text='画像が取得出来ませんでした。')
-        )
-        return '必要な情報が足りません'
-
+    src_img = Image.open(BytesIO(result.content))
     # PIL -> openCVへ
-    src_img = np.asarray(image)
+    src_img = np.asarray(src_img)
 
     # 顔画像を検出する
     cascade = cv2.CascadeClassifier('haarcascade_frontalface_alt.xml')
@@ -163,9 +155,12 @@ def check_face(event, result):
     print('len(facerect): ', len(facerect))
     if len(facerect)>0:
         for rect in facerect:
-            face_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
+            src_img = src_img[rect[1]:rect[1]+rect[3], rect[0]:rect[0]+rect[2]]
             print("顔画像見つけました")
-            return face_img
+            del cascade 
+            gc.collect()
+
+            return src_img
     else:
         print('顔画像が見つからなかった')
         return 
