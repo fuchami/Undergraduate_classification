@@ -5,9 +5,6 @@
 """
 
 import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sn
-from sklearn.metrics import confusion_matrix
 
 def plot_history(history, parastr, path):
 
