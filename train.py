@@ -19,15 +19,23 @@ def mobileNet_model(input_shape, classes):
     Input_shape = Input(shape=input_shape)
     mobilenet = MobileNetV2(include_top=False, 
         alpha=1.0, weights='imagenet', pooling='avg')
-    mobilenet.trainable = False
+    #mobilenet.trainable = False
+    for layer in mobilenet.layers[:72]:
+        layer.trainable = False
+        if "bn" in layer.name:
+            layer.trainable = True
+    for layer in mobilenet.layers[72:]:
+        layer.trainable = True
+
+
     mobilenet.summary()
 
     x_in = Input_shape
     x = mobilenet(x_in)
-    x = Dense(128, activation='relu')(x)
-    x = Dropout(0.3)(x)
-    x = Dense(64 , activation='relu')(x)
-    x = Dropout(0.3)(x)
+    x = Dense(1024, activation='relu')(x)
+    x = Dropout(0.25)
+    x = Dense(64, activation='relu')(x)
+    x = Dropout(0.25)
     x = Dense(classes, activation='softmax')(x)
 
     model = Model(x_in, x)
@@ -75,7 +83,7 @@ def main(args, classes):
         validation_steps=58)
     
     tools.plot_history(history, para_str, para_path)
-    mobile_model.save(para_path, '/trained_model.h5')
+    mobile_model.save(para_path + './trained_model.h5')
 
 
     return
