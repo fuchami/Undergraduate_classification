@@ -26,7 +26,7 @@ from linebot.models import (
 app = Flask(__name__)
 
 """ load model """
-PRED_MODEL = load_model('./trained_model.h5')
+PRED_MODEL = load_model('trained_model.h5')
 print('loaded model')
 
 # 環境変数
