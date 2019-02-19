@@ -12,7 +12,7 @@ from keras.applications.mobilenetv2 import MobileNetV2
 from keras.models import Model
 from keras.layers import Input, Dense, Dropout
 
-import load, tools
+import load
 
 def mobileNet_model(input_shape, classes):
 
