@@ -22,11 +22,11 @@ from linebot.models import (
     MessageEvent, TextMessage, ImageMessage, TextSendMessage,
 )
 
+app = Flask(__name__)
+
 """ load model """
 PRED_MODEL = load_model('./trained_model.h5')
 print('load model')
-
-app = Flask(__name__)
 
 # 環境変数
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
