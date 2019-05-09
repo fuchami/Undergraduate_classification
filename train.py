@@ -27,12 +27,11 @@ def mobileNet_model(input_shape, classes):
     for layer in mobilenet.layers[72:]:
         layer.trainable = True
 
-
     mobilenet.summary()
 
     x_in = Input_shape
     x = mobilenet(x_in)
-    x = Dense(1024, activation='relu')(x)
+    x = Dense(128, activation='relu')(x)
     x = Dropout(0.3)(x)
     x = Dense(classes, activation='softmax')(x)
 
